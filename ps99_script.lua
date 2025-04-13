@@ -1,4 +1,4 @@
--- Pet Simulator 99 (PS99) | Advanced Auto-Pet & Hatcher (APW.gg Compatible)
+-- Pet Simulator 99 (PS99) | Advanced Auto-Pet & Hatcher (APW.gg Compatible - Fixed)
 
 -- Check if the script is running on a valid executor
 if not (identifyexecutor and identifyexecutor() == "APW.gg") then
@@ -27,11 +27,13 @@ local cachedSlimeGifts = {}
 
 -- Notification Function (used with executor notifications)
 local function notify(title, text, duration)
-    StarterGui:SetCore("SendNotification", {
-        Title = title,
-        Text = text,
-        Duration = duration or 5
-    })
+    pcall(function() -- Use pcall to prevent runtime errors from breaking the script
+        StarterGui:SetCore("SendNotification", {
+            Title = title,
+            Text = text,
+            Duration = duration or 5
+        })
+    end)
 end
 
 -- Update Statistics
@@ -55,8 +57,9 @@ end
 local function autoOpenChests()
     for _, chest in ipairs(cachedChests) do
         if chest:FindFirstChild("ChestClicker") then
-            -- Simulate the chest interaction (no syn.request)
-            fireclickdetector(chest.ChestClicker)
+            pcall(function()
+                fireclickdetector(chest.ChestClicker) -- Ensure fireclickdetector is supported
+            end)
         end
     end
 end
@@ -65,7 +68,9 @@ end
 local function autoHatchSlimeEgg()
     local slimeEgg = Workspace:FindFirstChild("SlimeEgg")
     if slimeEgg and slimeEgg:FindFirstChild("HatchButton") then
-        slimeEgg.HatchButton:FireServer()
+        pcall(function()
+            slimeEgg.HatchButton:FireServer()
+        end)
     end
 end
 
@@ -89,7 +94,9 @@ end
 local function collectSlimeGifts()
     for _, gift in ipairs(cachedSlimeGifts) do
         if gift:FindFirstChild("CollectButton") then
-            gift.CollectButton:FireServer()
+            pcall(function()
+                gift.CollectButton:FireServer()
+            end)
         end
     end
 end
@@ -98,7 +105,9 @@ end
 local function upgradeConveyorPets()
     local conveyor = Workspace:FindFirstChild("ConveyorBelt")
     if conveyor and conveyor:FindFirstChild("UpgradeButton") then
-        conveyor.UpgradeButton:FireServer()
+        pcall(function()
+            conveyor.UpgradeButton:FireServer()
+        end)
     end
 end
 
@@ -106,10 +115,11 @@ end
 local function maxPetStats()
     for _, pet in pairs(Workspace:GetDescendants()) do
         if pet:IsA("Model") and pet:FindFirstChild("Humanoid") then
-            -- Simulate pet stat modification (no syn.request)
-            local humanoid = pet.Humanoid
-            humanoid.Health = math.huge
-            humanoid.WalkSpeed = 100
+            pcall(function()
+                local humanoid = pet.Humanoid
+                humanoid.Health = math.huge
+                humanoid.WalkSpeed = 100
+            end)
         end
     end
 end
