@@ -1,0 +1,148 @@
+Check if the script is running on a valid Level 4 Executor
+if not (syn and syn.request) then
+    warn("This script is compatible with Level 4 Executors (like Synapse X or Fluxus) only.")
+    return
+end
+
+-- Services
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+local Workspace = game:GetService("Workspace")
+local StarterGui = game:GetService("StarterGui")
+local SCAN_INTERVAL = 1
+
+-- Notification Function (used with executor notifications)
+local function notify(title, text, duration)
+    StarterGui:SetCore("SendNotification", {
+        Title = title,
+        Text = text,
+        Duration = duration or 5
+    })
+end
+
+-- Auto Open Titanic & Huge Chests
+local function autoOpenChests()
+    for _, chest in pairs(workspace:GetDescendants()) do
+        if chest.Name:find("TitanicChest") or chest.Name:find("HugeChest") then
+            if chest:FindFirstChild("ChestClicker") then
+                -- Using syn.request to interact with chest
+                syn.request({
+                    Url = "http://example.com/triggerChestOpening", -- Placeholder URL for chest opening interaction
+                    Method = "POST",
+                    Headers = {
+                        ["User-Agent"] = "PS99Executor"
+                    },
+                    Body = "chest="..chest.Name,
+                })
+            end
+        end
+    end
+end
+
+-- Auto Hatch Slime Egg
+local function autoHatchSlimeEgg()
+    local slimeEgg = workspace:FindFirstChild("SlimeEgg")
+    if slimeEgg then
+        -- Simulating the hatching of the Slime Egg
+        local hatchButton = slimeEgg:FindFirstChild("HatchButton")
+        if hatchButton then
+            hatchButton:FireServer()
+        end
+    end
+end
+
+-- Fake Titanic & Huge Hatch Chance Boost (Simulating)
+local function increaseTitanicChance()
+    -- Triggering particle effect to simulate Titanic Luck boost
+    local effect = Instance.new("ParticleEmitter")
+    effect.Name = "TitanicChanceBoost"
+    effect.Texture = "rbxassetid://10756141" -- Star-like sparkles for effect
+    effect.Color = ColorSequence.new(Color3.fromRGB(255, 0, 255))
+    effect.Size = NumberSequence.new(1.5)
+    effect.Rate = 20
+    effect.Lifetime = NumberRange.new(2)
+    effect.Speed = NumberRange.new(0)
+    effect.Parent = Character:FindFirstChild("HumanoidRootPart")
+
+    -- Notifying the player of the boost
+    notify("Titanic Luck Boosted!", "+2000% Titanic & Huge Hatch Chance!")
+end
+
+-- Auto Collect Slime Gift Bags (from Slime Machine)
+local function collectSlimeGifts()
+    for _, obj in pairs(workspace:GetDescendants()) do
+        if obj.Name:find("SlimeGift") then
+            -- Auto collect the slime gift bag by triggering its button
+            if obj:FindFirstChild("CollectButton") then
+                obj.CollectButton:FireServer()
+            end
+        end
+    end
+end
+
+-- Auto Upgrade Conveyor Pets (Using a simulated button press)
+local function upgradeConveyorPets()
+    local conveyor = workspace:FindFirstChild("ConveyorBelt")
+    if conveyor then
+        -- Simulate the upgrade action
+        if conveyor:FindFirstChild("UpgradeButton") then
+            conveyor.UpgradeButton:FireServer()
+        end
+    end
+end
+
+-- Max Pet Stats (Damage & Speed - Using Executor functions)
+local function maxPetStats()
+    for _, pet in pairs(workspace:GetDescendants()) do
+        if pet:IsA("Model") and pet:FindFirstChild("Humanoid") then
+            -- Using syn.request to interact and boost pet stats via server-side requests
+            syn.request({
+                Url = "http://example.com/setMaxPetStats", -- Placeholder URL for server-side pet stat modification
+                Method = "POST",
+                Headers = {
+                    ["User-Agent"] = "PS99Executor"
+                },
+                Body = "pet="..pet.Name.."&damage=max&speed=max",
+            })
+
+            -- Visual Effect for Max Stats
+            local effect = Instance.new("ParticleEmitter")
+            effect.Name = "MaxStatsEffect"
+            effect.Texture = "rbxassetid://10756141" -- Star sparkles for max stats
+            effect.Color = ColorSequence.new(Color3.fromRGB(0, 255, 0))
+            effect.Size = NumberSequence.new(2)
+            effect.Rate = 30
+            effect.Lifetime = NumberRange.new(2)
+            effect.Speed = NumberRange.new(0)
+            effect.Parent = pet:FindFirstChild("Head") or pet.PrimaryPart
+        end
+    end
+end
+
+-- Double Tap Brackets & Max Tap Speed (Simulating Fast Input)
+local function doubleTapBrackets()
+    -- Simulating double-tapping on brackets by sending inputs rapidly
+    local UserInputService = game:GetService("UserInputService")
+    local keyPress = Instance.new("InputObject", LocalPlayer)
+    keyPress.UserInputType = Enum.UserInputType.Keyboard
+    keyPress.KeyCode = Enum.KeyCode.LeftBracket
+    UserInputService.InputBegan:Fire(keyPress)
+    wait(0.1)
+    keyPress.KeyCode = Enum.KeyCode.RightBracket
+    UserInputService.InputBegan:Fire(keyPress)
+end
+
+-- Main Loop to Automate All Features
+task.spawn(function()
+    while true do
+        autoOpenChests() -- Auto open Titanic & Huge chests
+        autoHatchSlimeEgg() -- Auto hatch slime egg
+        collectSlimeGifts() -- Collect slime gift bags
+        upgradeConveyorPets() -- Upgrade conveyor pets
+        maxPetStats() -- Simulate max pet damage & speed
+        doubleTapBrackets() -- Simulate double tap for fast tapping
+        increaseTitanicChance() -- Fake Titanic hatch chance boost
+        task.wait(SCAN_INTERVAL)
+    end
+end)
